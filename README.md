@@ -8,7 +8,7 @@ mvn clean install
 ```
 Deploy in docker container
 ```
-docker build -t monitoring
+docker build -t monitoring .
 
 docker run -p 8080:8080 monitoring
 ```
@@ -22,7 +22,7 @@ Params: string url
 Returns: void
 
 ```
-/stop/jnetworks.by
+/start/jnetworks.by
 ```
 
 **/stop/{url}**  
@@ -31,7 +31,7 @@ Request type: POST
 Params: string url
 
 ```
-/start/jnetworks.by
+/stop/jnetworks.by
 ```
 
 **/last-result**  
