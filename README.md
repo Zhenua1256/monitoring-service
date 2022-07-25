@@ -8,7 +8,7 @@ mvn clean install
 ```
 Deploy in docker container
 ```
-docker build -t monitoring
+docker build -t monitoring .
 
 docker run -p 8080:8080 monitoring
 ```
