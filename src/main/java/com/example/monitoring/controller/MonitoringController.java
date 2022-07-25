@@ -28,8 +28,8 @@ public class MonitoringController {
     }
 
     @Operation(summary = "Get lst result monitoring")
-    @GetMapping(value = "/last-result")
-    public MonitoringDto getLastResult() {
-        return monitoringService.getLastMonitoringResult();
+    @GetMapping(value = "/last-result/{url}")
+    public MonitoringDto getLastResult(@PathVariable("url") final String url) {
+        return monitoringService.getLastMonitoringResult(url);
     }
 }

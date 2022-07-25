@@ -14,25 +14,26 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
 public class MonitoringService {
 
-    private final Map<String, Boolean> urls = new HashMap<>();
+    private final Map<String, Boolean> urls = new ConcurrentHashMap<>();
 
-    private final MonitoringDto monitoringDto = MonitoringDto.builder().build();
+    private final Map<String, MonitoringDto> lastResult = new HashMap<>();
 
     private final EmailService emailService;
 
     @Value("${url.port}")
-    private int PORT;
+    private int port;
 
     @Value("${url.timeout}")
-    private int TIMEOUT;
+    private int timeout;
 
     @Value("${test-email}")
-    private String TEST_EMAIL;
+    private String testEmail;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringService.class);
 
@@ -46,27 +47,33 @@ public class MonitoringService {
         urls.remove(url);
     }
 
-    public MonitoringDto getLastMonitoringResult() {
+    public MonitoringDto getLastMonitoringResult(final String url) {
         LOGGER.info("Get last result monitoring");
-        return monitoringDto;
+        return lastResult.get(url);
     }
 
     @Scheduled(cron = "${cron.expression.value}")
     public void run() {
         urls.forEach((url, value) -> {
             if (Boolean.TRUE.equals(value)) {
-                try(Socket socket = new Socket()) {
+                try (Socket socket = new Socket()) {
                     InetAddress ip = InetAddress.getByName(url);
-                    socket.connect(new InetSocketAddress(ip, PORT), TIMEOUT);
-                    monitoringDto.setUrl(url);
-                    monitoringDto.setAvailable("Available");
-                    emailService.sendEmail(TEST_EMAIL,
+                    socket.connect(new InetSocketAddress(ip, port), timeout);
+                    lastResult.put(url, MonitoringDto.builder()
+                            .available("Available")
+                            .url(url)
+                            .build()
+                    );
+                    emailService.sendEmail(testEmail,
                             "Test subject",
                             String.format("The url %s is available", url));
                 } catch (IOException e) {
-                    monitoringDto.setUrl(url);
-                    monitoringDto.setAvailable("No available");
-                    emailService.sendEmail(TEST_EMAIL,
+                    lastResult.put(url, MonitoringDto.builder()
+                            .available("Available")
+                            .url(url)
+                            .build()
+                    );
+                    emailService.sendEmail(testEmail,
                             "Test subject",
                             String.format("The url %s is not available", url));
                 }

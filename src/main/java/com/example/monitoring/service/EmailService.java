@@ -1,6 +1,5 @@
 package com.example.monitoring.service;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +15,7 @@ public class EmailService {
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailService.class);
 
     @Value("${spring.mail.username}")
-    private String FROM_EMAIL;
+    private String fromEmail;
 
     private final JavaMailSender mailSender;
 
@@ -24,13 +23,13 @@ public class EmailService {
                           String subject,
                           String body) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(FROM_EMAIL);
+        message.setFrom(fromEmail);
         message.setTo(toEmail);
         message.setText(body);
         message.setSubject(subject);
 
         mailSender.send(message);
 
-        LOGGER.info("Send email");
+        LOGGER.info(String.format("Send message on %s email", toEmail));
     }
 }
