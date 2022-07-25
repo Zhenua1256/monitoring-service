@@ -37,7 +37,7 @@ Params: string url
 **/last-result**  
 Get last result monitoring
 Request type: GET  
-Params:
+Params: string url 
 Returns: monitoringDto - object with two field, for example:
 ```
 {
